@@ -17,6 +17,8 @@ def main():
         print("[5] Quit")
         print("[6] Mark as Visited")
         print("[7] Wishlist / Visited")
+        print("[8] Rate a Trip")
+        print("[9] View Top Rated")
         
         choice = input("Select an option: ")
         
@@ -36,7 +38,8 @@ def main():
             else:
                 for i, trip in enumerate(collection.get_all(), 1):
                     status = "Visited" if trip.visited else "Wishlist"
-                    print(f"{i}. {trip.name} ({trip.country}) - ${trip.budget:.2f} [{status}]")
+                    rating = f"Rating: {trip.rating}/5" if trip.rating > 0 else "unrated"
+                    print(f"{i}. {trip.name} ({trip.country}) - ${trip.budget:.2f} [{status}] ({rating})")
                     if trip.notes:
                         print(f"   Notes: {trip.notes}")
         
@@ -45,7 +48,8 @@ def main():
             results = collection.search_by_country(country)
             for trip in results:
                 status = "Visited" if trip.visited else "Wishlist"
-                print(f"{trip.name} ({trip.country}) - ${trip.budget:.2f} [{status}]")
+                rating = f"Rating: {trip.rating}/5" if trip.rating > 0 else "unrated"
+                print(f"{trip.name} ({trip.country}) - ${trip.budget:.2f} [{status}] ({rating})")
                 if trip.notes:
                     print(f"   Notes: {trip.notes}")
         
@@ -86,6 +90,27 @@ def main():
             print(f"\nVisited ({len(visited)}):")
             for trip in visited:
                 print(f"- {trip.name} ({trip.country})")
+
+        elif choice == "8":
+            trips = collection.get_all()
+            for i, trip in enumerate(trips, 1):
+                rating = f"{trip.rating}/5" if trip.rating > 0 else "unrated"
+                print(f"{i}. {trip.name} ({rating})")
+            
+            n = int(input("Select number: "))
+            r = int(input("Enter rating (1-5): "))
+            collection.rate(n - 1, r)
+            save_trips(collection)
+            print(f"Rated {trips[n-1].name} as {r}/5!")
+
+        elif choice == "9":
+            top = collection.top_rated(3)
+            if not top:
+                print("No rated trips yet.")
+            else:
+                print("\n=== Top Rated Trips ===")
+                for trip in top:
+                    print(f"- {trip.name}: {trip.rating}/5")
         else:
             print("Invalid option, try again.")
 

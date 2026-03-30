@@ -9,6 +9,7 @@ class Destination:
     notes: list[str] = field(default_factory=list)
     date_added: str = field(default_factory=lambda: date.today().isoformat())
     visited: bool = False
+    rating: int = 0
 
     def add_note(self, note: str) -> None:
         self.notes.append(note)
@@ -40,3 +41,16 @@ class TripCollection:
 
     def mark_visited(self, index: int) -> None:
         self._trips[index].visited = True
+
+    def rate(self, index: int, rating: int) -> None:
+        if 1 <= rating <= 5:
+            self._trips[index].rating = rating
+        else:
+            print("Rating must be between 1 and 5.")
+
+    def top_rated(self, n: int = 3) -> list[Destination]:
+        rated_trips = [d for d in self._trips if d.rating > 0]
+        return sorted(rated_trips, key=lambda x: x.rating, reverse=True)[:n]
+
+    def get_by_min_rating(self, min_rating: int) -> list[Destination]:
+        return [d for d in self._trips if d.rating >= min_rating]
